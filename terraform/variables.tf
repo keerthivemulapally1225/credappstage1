@@ -56,7 +56,7 @@ variable "node_max_count" {
 # Size of each AKS node (VM)
 variable "vm_size" {
   type    = string
-  default = "Standard D4ds v4"
+  default = "Standard_D2s_v3"
 }
 
 # ----- PostgreSQL -----
