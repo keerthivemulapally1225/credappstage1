@@ -36,28 +36,28 @@ variables:
   tag: '$(Build.BuildId)'
 
   # # Repositories in ACR
-  # frontendRepository: 'credpay/frontend'
-  # userRepository: 'credpay/user-service'
-  # paymentRepository: 'credpay/payment-service'
+  frontendRepository: 'credpay/frontend'
+  userRepository: 'credpay/user-service'
+  paymentRepository: 'credpay/payment-service'
 
-  # # Terraform remote state backend
-  # tfStateRG: 'credstage1'
-  # tfStateStorage: 'credstagesa1225'
-  # tfStateContainer: 'sfile'
-  # tfStateKey: 'credpay.terraform.tfstate'
+  # Terraform remote state backend
+  tfStateRG: 'credstage1'
+  tfStateStorage: 'credstagesa1225'
+  tfStateContainer: 'sfile'
+  tfStateKey: 'credpay.terraform.tfstate'
 
   # AKS cluster - deterministic names from terraform/main.tf's
   # name_prefix = "credpay" (rg-credpay / aks-credpay)
-  # aksResourceGroup: 'rg-credpays1'
-  # aksClusterName: 'aks-credpays1'
-  # k8sNamespace: 'credpay'
+  aksResourceGroup: 'rg-credpays1'
+  aksClusterName: 'aks-credpays1'
+  k8sNamespace: 'credpay'
 
   # Azure Key Vault - created out-of-band (like the ACR), in the CredProj
   # bootstrap RG (same RG as the Terraform state storage account, not
   # rg-credpay). Terraform writes the Postgres secrets into it; the
   # pipeline reads them back below.
-  # keyVaultName: 'credstagekv1225'
-  # keyVaultResourceGroup: 'credstage1'
+  keyVaultName: 'credstagekv1225'
+  keyVaultResourceGroup: 'credstage1'
 
 # =========================================================
 # STAGES
