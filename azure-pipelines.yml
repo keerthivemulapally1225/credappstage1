@@ -568,4 +568,57 @@ stages:
 #     # Final Validation - always runs (even after a failed smoke test)
 #     # so the pipeline log always shows the true state of the cluster.
 #     #########################################################
-    
+
+    - task: AzureCLI@2
+      displayName: Final Validation
+      condition: always()
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "===== Pods ====="
+          kubectl get pods -n $(k8sNamespace) -o wide
+
+          echo "===== Services ====="
+          kubectl get svc -n $(k8sNamespace)
+
+          echo "===== Ingress ====="
+          kubectl get ingress -n $(k8sNamespace)
+
+          echo "===== Deployments ====="
+          kubectl get deployments -n $(k8sNamespace)
+
+          echo "===== HPA ====="
+          kubectl get hpa -n $(k8sNamespace)
+
+          echo "===== Active Frontend Version (Service selector) ====="
+          kubectl get svc frontend -n $(k8sNamespace) -o jsonpath='{.spec.selector}'
+          echo
+
+          echo "===== Current Images ====="
+          kubectl get deployments -n $(k8sNamespace) \
+            -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[0].image}{"\n"}{end}'
+
+          INGRESS_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
+          if [ -n "$INGRESS_IP" ]; then
+            echo "===== End-to-end check via Ingress ($INGRESS_IP) ====="
+            curl -s -o /dev/null -w "GET /                    -> HTTP %{http_code}\n" http://$INGRESS_IP/ || true
+            curl -s -o /dev/null -w "GET /api/users/health    -> HTTP %{http_code}\n" http://$INGRESS_IP/api/users/health || true
+            curl -s -o /dev/null -w "GET /api/payment/health  -> HTTP %{http_code}\n" http://$INGRESS_IP/api/payment/health || true
+          else
+            echo "Ingress controller has no public IP yet - skipping external check."
+          fi
+
+          ACTIVE_COLOR=$(kubectl get svc frontend -n $(k8sNamespace) -o jsonpath='{.spec.selector.version}')
+          ACTIVE_COLOR_UPPER=$(echo $ACTIVE_COLOR | tr '[:lower:]' '[:upper:]')
+          echo ""
+          echo "=================================================="
+          echo " PROD ENVIRONMENT IS CURRENTLY RUNNING ON: $ACTIVE_COLOR_UPPER"
+          if [ -n "$INGRESS_IP" ]; then
+            echo " BROWSE TO THE APP AT: http://$INGRESS_IP/"
+          else
+            echo " Ingress controller has no public IP yet - re-run this stage or"
+            echo " check with: kubectl get svc -n ingress-nginx ingress-nginx-controller"
+          fi
+          echo "=================================================="        
