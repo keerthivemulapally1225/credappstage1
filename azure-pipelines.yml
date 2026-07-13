@@ -31,6 +31,7 @@ variables:
   # `az aks update --attach-acr`, which takes the registry's own name.
   acrName: 'credacr'
 
+
   # Image tag - every build is pushed as both $(tag) and :latest
   tag: '$(Build.BuildId)'
 
