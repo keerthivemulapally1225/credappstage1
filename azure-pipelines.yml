@@ -24,7 +24,7 @@ pool:
 variables:
 
   # Azure service connections
-  acrServiceConnection: 'credapp-scv'
+  acrServiceConnection: 'credapp-sc'
   azureServiceConnection: 'credapp-manual'
 
   # ACR resource name (not the service connection name above) - needed for
