@@ -56,8 +56,8 @@ variables:
   # bootstrap RG (same RG as the Terraform state storage account, not
   # rg-credpay). Terraform writes the Postgres secrets into it; the
   # pipeline reads them back below.
-  keyVaultName: 'credstagekv1225'
-  keyVaultResourceGroup: 'credstage1'
+  # keyVaultName: 'credstagekv1225'
+  # keyVaultResourceGroup: 'credstage1'
 
 # =========================================================
 # STAGES
